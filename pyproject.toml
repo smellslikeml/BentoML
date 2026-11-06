@@ -81,10 +81,13 @@ Blog = "https://bentoml.com/blog"
 bentoml = "bentoml_cli.cli:cli"
 [project.optional-dependencies]
 all = [
-    "bentoml[aws,io,grpc,grpc-reflection,grpc-channelz,tracing,monitor-otlp]",
+    "bentoml[aws,gcs,io,grpc,grpc-reflection,grpc-channelz,tracing,monitor-otlp]",
 ]
 aws = [
     "s3fs",
+]
+gcs = [
+    "gcsfs",
 ]
 io = [
     "bentoml[io-image,io-pandas]",

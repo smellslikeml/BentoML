@@ -388,6 +388,68 @@ def test_from_fs_imports_fsspec_directory_source(tmp_path: Path) -> None:
     assert imported._path.joinpath("nested/file.txt").read_text() == "nested"
 
 
+class _ReachedFileSystem(RuntimeError):
+    """Raised in place of fsspec.url_to_fs to mark the protocol gate as passed."""
+
+    def __init__(self, url: str) -> None:
+        super().__init__(url)
+        self.url = url
+
+
+def _stub_url_to_fs(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Stop export/import right past the protocol gate, before any remote I/O."""
+    import fsspec
+
+    def _probe(url: str, **kwargs: object) -> tuple[str, str]:
+        raise _ReachedFileSystem(url)
+
+    monkeypatch.setattr(fsspec, "url_to_fs", _probe)
+
+
+@pytest.mark.parametrize("protocol", ["gs", "gcs"])
+def test_gcs_protocol_is_registered_in_fsspec(protocol: str) -> None:
+    from fsspec.registry import known_implementations
+
+    # parity with the supported 's3' scheme: the scheme must be routable by
+    # fsspec itself, so at most the backend package can be missing.
+    assert "s3" in known_implementations
+    assert protocol in known_implementations
+    assert known_implementations[protocol]["class"] == "gcsfs.GCSFileSystem"
+
+
+@pytest.mark.parametrize("protocol", ["gs", "gcs"])
+def test_export_to_gcs_url_passes_the_protocol_gate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, protocol: str
+) -> None:
+    _stub_url_to_fs(monkeypatch)
+
+    with pytest.raises(_ReachedFileSystem) as exc:
+        DummyExportable(tmp_path / "dummy").export(f"{protocol}://my_bucket/folder")
+
+    assert exc.value.url.startswith(f"{protocol}://")
+
+
+@pytest.mark.parametrize("protocol", ["gs", "gcs"])
+def test_import_from_gcs_url_passes_the_protocol_gate(
+    monkeypatch: pytest.MonkeyPatch, protocol: str
+) -> None:
+    _stub_url_to_fs(monkeypatch)
+
+    with pytest.raises(_ReachedFileSystem) as exc:
+        DummyExportable.import_from(f"{protocol}://my_bucket/folder/my_model", "folder")
+
+    assert exc.value.url.startswith(f"filecache::{protocol}://")
+
+
+def test_export_still_rejects_unknown_protocols(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _stub_url_to_fs(monkeypatch)
+
+    with pytest.raises(ValueError, match="Unknown or unsupported protocol"):
+        DummyExportable(tmp_path / "dummy").export("notaprotocol://my_bucket/folder")
+
+
 def test_import_model_rejects_otherwise_valid_archive_with_traversal(
     tmp_path: Path,
 ) -> None:

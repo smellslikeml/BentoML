@@ -92,7 +92,7 @@ def import_model(
         bentoml.models.import_model('/path/to/folder/my_model', 'folder')
 
         # imports 'my_model' from the S3 bucket 'my_bucket', path 'folder/my_model.bentomodel'
-        # requires `fs-s3fs <https://pypi.org/project/fs-s3fs/>`_ ('pip install fs-s3fs')
+        # requires `s3fs <https://pypi.org/project/s3fs/>`_ ('pip install s3fs' or 'pip install bentoml[aws]')
         bentoml.models.import_model('s3://my_bucket/folder/my_model.bentomodel')
         bentoml.models.import_model('my_bucket/folder/my_model.bentomodel', protocol='s3')
         bentoml.models.import_model('my_bucket', protocol='s3', subpath='folder/my_model.bentomodel')
@@ -100,15 +100,21 @@ def import_model(
                                     user='<AWS access key>', passwd='<AWS secret key>',
                                     params={'acl': 'public-read', 'cache-control': 'max-age=2592000,public'})
 
+        # imports 'my_model' from the Google Cloud Storage bucket 'my_bucket', path 'folder/my_model.bentomodel'
+        # requires `gcsfs <https://pypi.org/project/gcsfs/>`_ ('pip install gcsfs' or 'pip install bentoml[gcs]')
+        bentoml.models.import_model('gs://my_bucket/folder/my_model.bentomodel')
+        bentoml.models.import_model('my_bucket/folder/my_model.bentomodel', protocol='gcs')
+        bentoml.models.import_model('my_bucket', protocol='gcs', subpath='folder/my_model.bentomodel')
+
     For a more comprehensive description of what each of the keyword arguments (:code:`protocol`,
     :code:`user`, :code:`passwd`, :code:`params`, and :code:`subpath`) mean, see the
-    `FS URL documentation <https://docs.pyfilesystem.org/en/latest/openers.html>`_.
+    `FS URL documentation <https://filesystem-spec.readthedocs.io/en/latest/api.html>`_.
 
     Args:
         tag: the tag of the model to export
         path: can be one of two things:
               * a folder on the local filesystem
-              * an `FS URL <https://docs.pyfilesystem.org/en/latest/openers.html>`_, for example :code:`'s3://my_bucket/folder/my_model.bentomodel'`
+              * an `FS URL <https://filesystem-spec.readthedocs.io/en/latest/api.html>`_, for example :code:`'s3://my_bucket/folder/my_model.bentomodel'`
         protocol: (expert) The FS protocol to use when exporting. Some example protocols are :code:`'ftp'`, :code:`'s3'`, and :code:`'userdata'`
         user: (expert) the username used for authentication if required, e.g. for FTP
         passwd: (expert) the username used for authentication if required, e.g. for FTP
@@ -168,6 +174,7 @@ def export_model(
         bentoml.models.export_model('my_model:latest', '/path/to/folder/my_model', 'folder')
 
         # exports 'my_model' to the S3 bucket 'my_bucket' as 'folder/my_model-version.bentomodel'
+        # requires `s3fs <https://pypi.org/project/s3fs/>`_ ('pip install s3fs' or 'pip install bentoml[aws]')
         bentoml.models.export_model('my_model:latest', 's3://my_bucket/folder')
         bentoml.models.export_model('my_model:latest', 'my_bucket/folder', protocol='s3')
         bentoml.models.export_model('my_model:latest', 'my_bucket', protocol='s3', subpath='folder')
@@ -175,15 +182,21 @@ def export_model(
                                     user='<AWS access key>', passwd='<AWS secret key>',
                                     params={'acl': 'public-read', 'cache-control': 'max-age=2592000,public'})
 
+        # exports 'my_model' to the Google Cloud Storage bucket 'my_bucket' as 'folder/my_model-version.bentomodel'
+        # requires `gcsfs <https://pypi.org/project/gcsfs/>`_ ('pip install gcsfs' or 'pip install bentoml[gcs]')
+        bentoml.models.export_model('my_model:latest', 'gs://my_bucket/folder')
+        bentoml.models.export_model('my_model:latest', 'my_bucket/folder', protocol='gcs')
+        bentoml.models.export_model('my_model:latest', 'my_bucket', protocol='gcs', subpath='folder')
+
     For a more comprehensive description of what each of the keyword arguments (:code:`protocol`,
     :code:`user`, :code:`passwd`, :code:`params`, and :code:`subpath`) mean, see the
-    `FS URL documentation <https://docs.pyfilesystem.org/en/latest/openers.html>`_.
+    `FS URL documentation <https://filesystem-spec.readthedocs.io/en/latest/api.html>`_.
 
     Args:
         tag: the tag of the model to export
         path: can be one of two things:
               * a folder on the local filesystem
-              * an `FS URL <https://docs.pyfilesystem.org/en/latest/openers.html>`_, for example, :code:`'s3://my_bucket/folder/my_model.bentomodel'`
+              * an `FS URL <https://filesystem-spec.readthedocs.io/en/latest/api.html>`_, for example, :code:`'s3://my_bucket/folder/my_model.bentomodel'`
         protocol: (expert) The FS protocol to use when exporting. Some example protocols are :code:`'ftp'`, :code:`'s3'`, and :code:`'userdata'`.
         user: (expert) the username used for authentication if required, e.g. for FTP
         passwd: (expert) the username used for authentication if required, e.g. for FTP

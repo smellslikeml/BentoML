@@ -188,8 +188,14 @@ You can perform the following operations on models by using the BentoML CLI.
 
         .. code-block:: bash
 
-            pip install fs-s3fs  *# Additional dependency required for working with s3*
+            pip install s3fs  *# Additional dependency required for working with s3*
             bentoml models export summarization-model:latest s3://my_bucket/my_prefix/
+
+        For Google Cloud Storage, install the ``gcsfs`` dependency instead (or ``pip install bentoml[gcs]``):
+
+        .. code-block:: bash
+
+            bentoml models export summarization-model:latest gs://my_bucket/my_prefix/
 
     .. tab-item:: Delete
 
@@ -235,6 +241,7 @@ In addition to the CLI commands, BentoML also provides equivalent Python APIs fo
         .. code-block:: python
 
             bentoml.models.import_model('s3://my_bucket/folder/my_model.bentomodel')
+            bentoml.models.import_model('gs://my_bucket/folder/my_model.bentomodel')  # requires gcsfs ('pip install bentoml[gcs]')
 
     .. tab-item:: Delete
 

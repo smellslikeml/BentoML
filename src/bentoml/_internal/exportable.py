@@ -389,7 +389,7 @@ class Exportable(ABC):
 
         if protocol not in known_implementations:
             raise ValueError(
-                f"Unknown or unsupported protocol {protocol}. Some supported protocols are 'ftp', 's3', and 'file'."
+                f"Unknown or unsupported protocol {protocol}. Some supported protocols are 'ftp', 's3', 'gs', and 'file'."
             )
 
         if input_format is None:
@@ -471,7 +471,7 @@ class Exportable(ABC):
 
         if protocol not in known_implementations:
             raise ValueError(
-                f"Unknown or unsupported protocol {protocol}. Some supported protocols are 'ftp', 's3', and 'file'."
+                f"Unknown or unsupported protocol {protocol}. Some supported protocols are 'ftp', 's3', 'gs', and 'file'."
             )
 
         if output_format is None:

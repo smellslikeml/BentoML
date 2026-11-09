@@ -116,7 +116,7 @@ def import_bento(
 
         # imports 'my_bento' from the S3 bucket 'my_bucket',
         # path 'folder/my_bento.bento'
-        # requires `fs-s3fs <https://pypi.org/project/fs-s3fs/>`_
+        # requires `s3fs <https://pypi.org/project/s3fs/>`_ ('pip install bentoml[aws]')
         bentoml.import_bento('s3://my_bucket/folder/my_bento.bento')
         bentoml.import_bento('my_bucket/folder/my_bento.bento', protocol='s3')
         bentoml.import_bento('my_bucket', protocol='s3',
@@ -127,16 +127,24 @@ def import_bento(
                              params={'acl': 'public-read',
                                      'cache-control': 'max-age=2592000,public'})
 
+        # imports 'my_bento' from the Google Cloud Storage bucket 'my_bucket',
+        # path 'folder/my_bento.bento'
+        # requires `gcsfs <https://pypi.org/project/gcsfs/>`_ ('pip install bentoml[gcs]')
+        bentoml.import_bento('gs://my_bucket/folder/my_bento.bento')
+        bentoml.import_bento('my_bucket/folder/my_bento.bento', protocol='gcs')
+        bentoml.import_bento('my_bucket', protocol='gcs',
+                             subpath='folder/my_bento.bento')
+
     For a more comprehensive description of what each of the keyword arguments
     (:code:`protocol`, :code:`user`, :code:`passwd`,
      :code:`params`, and :code:`subpath`) mean, see the
-    `FS URL documentation <https://docs.pyfilesystem.org/en/latest/openers.html>`_.
+    `FS URL documentation <https://filesystem-spec.readthedocs.io/en/latest/api.html>`_.
 
     Args:
         tag: the tag of the bento to export
         path: can be one of two things:
               * a folder on the local filesystem
-              * an `FS URL <https://docs.pyfilesystem.org/en/latest/openers.html>`_,
+              * an `FS URL <https://filesystem-spec.readthedocs.io/en/latest/api.html>`_,
                 for example :code:`'s3://my_bucket/folder/my_bento.bento'`
         protocol: (expert) The FS protocol to use when exporting. Some example protocols
                   are :code:`'ftp'`, :code:`'s3'`, and :code:`'userdata'`
@@ -184,6 +192,12 @@ def export_bento(
 
        » pip install bentoml[aws]
 
+    To export a bento to Google Cloud Storage, you must install BentoML with extras ``gcs``:
+
+    .. code-block:: bash
+
+       » pip install bentoml[gcs]
+
     Examples:
 
     .. code-block:: python
@@ -207,6 +221,7 @@ def export_bento(
         bentoml.export_bento('my_bento:latest', '/path/to/folder/my_bento', 'folder')
 
         # exports 'my_bento' to the S3 bucket 'my_bucket' as 'folder/my_bento-version.bento'
+        # requires `s3fs <https://pypi.org/project/s3fs/>`_ ('pip install bentoml[aws]')
         bentoml.export_bento('my_bento:latest', 's3://my_bucket/folder')
         bentoml.export_bento('my_bento:latest', 'my_bucket/folder', protocol='s3')
         bentoml.export_bento('my_bento:latest', 'my_bucket', protocol='s3', subpath='folder')
@@ -214,15 +229,21 @@ def export_bento(
                              user='<AWS access key>', passwd='<AWS secret key>',
                              params={'acl': 'public-read', 'cache-control': 'max-age=2592000,public'})
 
+        # exports 'my_bento' to the Google Cloud Storage bucket 'my_bucket' as 'folder/my_bento-version.bento'
+        # requires `gcsfs <https://pypi.org/project/gcsfs/>`_ ('pip install bentoml[gcs]')
+        bentoml.export_bento('my_bento:latest', 'gs://my_bucket/folder')
+        bentoml.export_bento('my_bento:latest', 'my_bucket/folder', protocol='gcs')
+        bentoml.export_bento('my_bento:latest', 'my_bucket', protocol='gcs', subpath='folder')
+
     For a more comprehensive description of what each of the keyword arguments (:code:`protocol`,
     :code:`user`, :code:`passwd`, :code:`params`, and :code:`subpath`) mean, see the
-    `FS URL documentation <https://docs.pyfilesystem.org/en/latest/openers.html>`_.
+    `FS URL documentation <https://filesystem-spec.readthedocs.io/en/latest/api.html>`_.
 
     Args:
         tag: the tag of the Bento to export
         path: can be either:
               * a folder on the local filesystem
-              * an `FS URL <https://docs.pyfilesystem.org/en/latest/openers.html>`_. For example, :code:`'s3://my_bucket/folder/my_bento.bento'`
+              * an `FS URL <https://filesystem-spec.readthedocs.io/en/latest/api.html>`_. For example, :code:`'s3://my_bucket/folder/my_bento.bento'`
         protocol: (expert) The FS protocol to use when exporting. Some example protocols are :code:`'ftp'`, :code:`'s3'`, and :code:`'userdata'`
         user: (expert) the username used for authentication if required, e.g. for FTP
         passwd: (expert) the username used for authentication if required, e.g. for FTP
